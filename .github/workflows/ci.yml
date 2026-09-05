@@ -24,3 +24,7 @@ jobs:
         run: python -m backend.cli demo > /tmp/demo.json && python -c "import json; x=json.load(open('/tmp/demo.json')); assert x['status']=='SUCCEEDED'; assert len(x['artifacts']['fills']) == 2"
       - name: Durable demo smoke test
         run: python -m backend.cli persistent-demo --db /tmp/rates-fund.sqlite3 > /tmp/persistent.json && python -c "import json; x=json.load(open('/tmp/persistent.json')); assert x['status']=='SUCCEEDED'; assert len(x['events']) == 2"
+      - name: Full organization smoke test
+        run: python -m backend.cli full-demo > /tmp/full.json && python -c "import json; x=json.load(open('/tmp/full.json')); a=x['artifacts']; assert x['status']=='SUCCEEDED'; assert len(a['pods']) == 5; assert a['compliance']['status'] == 'APPROVED'; assert a['fundbench']['completion_rate'] == 1.0"
+      - name: Replay smoke test
+        run: python -m backend.cli replay --fixture data/fixtures/curve_demo.json > /tmp/replay.json && python -c "import json; x=json.load(open('/tmp/replay.json')); assert x['run_id'].startswith('replay-'); assert x['artifacts']['snapshot']['mode'] == 'REPLAY'"
