@@ -759,7 +759,15 @@ resume_steps:
 
 若会话中断，下一模型依次读取仓库说明、当前状态、交接文件及对应 Issue，再检查实际代码与测试。不可仅凭上一条自然语言“已完成”决定跳过风控或账本验收。
 
-## 22. 最终交付检查清单
+## 22. 实施状态附录（2026-09-05）
+
+本方案已经在 GitHub 仓库 `AIfinanceplus/one-person-fund` 执行到 v0.1a（M0–M6）并通过 CI。仓库现有 14 个岗位契约、5 个策略 Pod、DEMO/REPLAY/PAPER 隔离、SQLite StateStore、确定性 Risk/Compliance、幂等 PaperBroker、Ledger、九页面静态 Command Center、失败场景入口和 50 案例 FundBench。
+
+真实证据：本地 `python -m unittest discover -s tests -v` 为 14/14；`full-demo` 为 5 Pods、Compliance `APPROVED`、FundBench 50/50；REPLAY fixture 运行 ID 为 `replay-fixture-curve-001` 且订单 mode 为 `REPLAY`；GitHub Actions 最终通过 run `33948015584`，包含 compile、unit tests、DEMO、durable demo、full-demo 和 REPLAY smoke。
+
+仍未完成且不可伪称完成：NautilusTrader 接入试验、授权 ETF 实时 quote/bar、历史 duration/公司行动/交易日历、一次真实来源 PAPER run、10 个实际交易日观察、身份认证和生产多进程部署。这些属于 v0.1b 前置条件，详见 `docs/STATUS.md`、`docs/HANDOFF.md` 与 `docs/adr/0001-execution-and-modes.md`。
+
+## 23. 最终交付检查清单
 
 - [ ] 自有仓库身份与现有代码处理已记录，未覆盖用户改动。
 - [ ] 架构、数据源、执行后端、许可与限制有 ADR。
