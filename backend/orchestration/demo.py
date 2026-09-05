@@ -24,8 +24,7 @@ def build_demo_snapshot() -> tuple[DataSnapshot, list[Decimal]]:
     return snapshot, history
 
 
-def run_demo() -> dict[str, object]:
-    snapshot, history = build_demo_snapshot()
+def run_snapshot(snapshot: DataSnapshot, history: list[Decimal], run_id: str = "demo-run-001") -> dict[str, object]:
     signal = curve_signal(snapshot, history)
     # Seed a 50/50 long-only baseline. The signal moves it to 60/40; it does not create a short.
     ledger = Ledger(Decimal("1000"), initial_positions={"SHY": Decimal("60969.512195"), "IEF": Decimal("52626.315789")})
@@ -47,7 +46,12 @@ def run_demo() -> dict[str, object]:
         for fill in broker.fills.values():
             artifacts.setdefault("fills", []).append(fill.model_dump(mode="json"))
     artifacts["ledger"] = ledger.snapshot({"SHY": snapshot.records["SHY"], "IEF": snapshot.records["IEF"]})
-    return {"run_id": "demo-run-001", "status": "SUCCEEDED" if decision.status == DecisionStatus.APPROVED else "REJECTED", "artifacts": artifacts}
+    return {"run_id": run_id, "status": "SUCCEEDED" if decision.status == DecisionStatus.APPROVED else "REJECTED", "artifacts": artifacts}
+
+
+def run_demo() -> dict[str, object]:
+    snapshot, history = build_demo_snapshot()
+    return run_snapshot(snapshot, history)
 
 
 def run_summary() -> RunSummary:
