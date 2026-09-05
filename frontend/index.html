@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rates Fund OS · Command Center</title>
+  <style>
+    :root { color-scheme: dark; --bg:#0a1020; --card:#111b30; --line:#283858; --muted:#99a9c7; --accent:#69d3ff; --ok:#62dfaa; --warn:#ffd166; }
+    * { box-sizing: border-box; } body { margin:0; font:14px/1.5 system-ui,sans-serif; background:var(--bg); color:#eef4ff; }
+    main { max-width:1180px; margin:0 auto; padding:28px 18px 60px; } header { display:flex; justify-content:space-between; gap:16px; align-items:end; margin-bottom:20px; }
+    h1 { margin:0; font-size:26px; } h2 { font-size:16px; margin:0 0 12px; } .muted { color:var(--muted); } .grid { display:grid; gap:12px; } .metrics { grid-template-columns:repeat(5,minmax(0,1fr)); }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; } .metric strong { display:block; font-size:20px; margin-top:5px; }
+    .pipeline { display:grid; grid-template-columns:repeat(7,minmax(100px,1fr)); gap:8px; align-items:stretch; } .node { border:1px solid var(--line); border-radius:10px; padding:12px 9px; background:#16233e; cursor:pointer; min-height:82px; }
+    .node:hover,.node.active { border-color:var(--accent); box-shadow:0 0 0 1px #69d3ff55; } .node b { display:block; color:var(--accent); margin-bottom:5px; } .node small { color:var(--muted); }
+    .two { grid-template-columns:1.2fr .8fr; margin-top:12px; } pre { white-space:pre-wrap; color:#cfe0ff; max-height:370px; overflow:auto; } button { color:inherit; }
+    @media (max-width:850px) { .metrics,.pipeline,.two { grid-template-columns:1fr 1fr; } } @media (max-width:520px) { .metrics,.pipeline,.two { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body><main>
+  <header><div><div class="muted">ONE PERSON FUND / RATES FUND OS</div><h1>Command Center</h1></div><div class="muted" id="asof">Loading…</div></header>
+  <section class="grid metrics">
+    <div class="card metric"><span class="muted">Mode</span><strong>DEMO</strong></div><div class="card metric"><span class="muted">Roles</span><strong>14 / 14</strong></div><div class="card metric"><span class="muted">Strategy pods</span><strong>5</strong></div><div class="card metric"><span class="muted">Risk</span><strong style="color:var(--ok)">GATED</strong></div><div class="card metric"><span class="muted">Execution</span><strong>Paper</strong></div>
+  </section>
+  <section class="card" style="margin-top:12px"><h2>Autonomous investment pipeline</h2><div class="pipeline" id="pipeline"></div><div class="card" style="margin-top:12px;background:#0c1528"><div class="muted">Selected stage</div><div id="detail">选择一个节点查看岗位契约和交接说明。</div></div></section>
+  <section class="grid two">
+    <div class="card"><h2>Latest run</h2><pre id="run">Loading…</pre></div>
+    <div class="card"><h2>System boundary</h2><p class="muted">Agent 提出观点 → Quant 验证 → Red Team 挑战 → PM 提案 → 确定性 Risk 授权 → Paper 执行 → Ledger 对账。</p><p class="muted">收益率曲线是研究输入；ETF 行情是执行输入。缺少数据时显示 ABSTAIN 或 REJECTED。</p></div>
+  </section>
+</main><script>
+const stages={research:['Research','Macro · CPI · Fed · Rates','研究包、证据与假设'],quant:['Quant','时间切分 · 成本 · OOS','验证报告与样本限制'],red:['Red Team','反方与失败条件','挑战报告'],pm:['PM','排序 · 配置 · 交易提案','目标权重与原因'],risk:['Risk','DV01 · limits · stress','规则版本与 PASS/FAIL'],trade:['Trader','Paper only · idempotent','订单、成交与成本'],learn:['Learn','对账 · NAV · 评估','账本、归因与 FundBench']};
+const pipeline=document.querySelector('#pipeline'), detail=document.querySelector('#detail');
+Object.entries(stages).forEach(([key,[title,sub,desc]])=>{const b=document.createElement('button');b.className='node';b.innerHTML=`<b>${title}</b><small>${sub}</small>`;b.onclick=()=>{document.querySelectorAll('.node').forEach(x=>x.classList.remove('active'));b.classList.add('active');detail.innerHTML=`<strong>${title}</strong>：${desc}<br><span class="muted">此节点没有执行权限之外的额外权限。</span>`};pipeline.appendChild(b)});
+fetch('/api/demo').then(r=>r.json()).then(x=>{document.querySelector('#asof').textContent=`run ${x.run_id} · ${x.status}`;document.querySelector('#run').textContent=JSON.stringify(x,null,2)}).catch(e=>{document.querySelector('#run').textContent='API unavailable: '+e});
+</script></body></html>
