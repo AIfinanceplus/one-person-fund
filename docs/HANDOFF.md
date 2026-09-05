@@ -18,10 +18,10 @@ python -m backend.api
 - The demo returns `SUCCEEDED`, exactly two fills, two ledger entries, and a deterministic risk decision.
 - Unit tests cover role registry, risk rejection, duplicate order idempotency, and duplicate fill idempotency.
 - The API exposes `/api/demo` and `/api/roles`; the UI reads the real demo response.
-- M3 implementation baseline: `428f37a529e550207b0079f4cdc540dc5ec43fed`
-- GitHub Actions: run `33946465641` passed compile, 8 unit tests, demo smoke, and durable demo smoke.
+- M3 implementation baseline: `3a19fd7606742d3385fb966d11c01195b6b0a85a`
+- GitHub Actions: run `33946589948` passed compile, 10 unit tests, demo smoke, and durable demo smoke.
 - Next issues: #3 persistent state/outbox/recovery; #9 real data/vintage adapters.
-- M3 local evidence: 8 unit tests pass; persistent demo returns `SUCCEEDED` with two durable events and a completed run.
+- M3 local evidence: 10 unit tests pass; persistent demo returns `SUCCEEDED` with two durable events and a completed run; adapter tests use injected local XML/CSV.
 
 ## Do not infer
 
