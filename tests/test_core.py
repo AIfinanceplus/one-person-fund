@@ -1,13 +1,17 @@
 import unittest
 from datetime import datetime, timezone
 from decimal import Decimal
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
 from backend.contracts.roles import ROLE_CONTRACTS
 from backend.domain.models import DataSnapshot, RunMode, Side, TradeLeg, TradeProposal
 from backend.execution.paper import PaperBroker
 from backend.ledger.accounting import Ledger
 from backend.orchestration.demo import run_demo
+from backend.orchestration.persistent import run_persistent_demo
 from backend.risk.engine import RiskEngine
+from backend.state.store import StateStore
 
 
 class RatesFundCoreTests(unittest.TestCase):
@@ -54,6 +58,30 @@ class RatesFundCoreTests(unittest.TestCase):
         cash_once = ledger.cash()
         ledger.record_fill(fill)
         self.assertEqual(ledger.cash(), cash_once)
+
+    def test_state_store_deduplicates_events_and_recovers_expired_task(self):
+        with TemporaryDirectory() as directory:
+            path = Path(directory) / "state.sqlite3"
+            store = StateStore(path)
+            self.assertTrue(store.create_run("r1", "DEMO"))
+            self.assertTrue(store.enqueue_task("t1", "r1", "R02", {"x": 1}))
+            self.assertTrue(store.claim_task("t1", "worker-1", lease_seconds=0))
+            self.assertTrue(store.claim_task("t1", "worker-2", lease_seconds=60))
+            self.assertTrue(store.append_event("e1", "r1", 1, "TEST", {"ok": True}))
+            self.assertFalse(store.append_event("e1", "r1", 1, "TEST", {"ok": True}))
+            self.assertEqual(len(store.events("r1")), 1)
+            store.close()
+            reopened = StateStore(path)
+            self.assertEqual(reopened.run("r1")["run_id"], "r1")
+            self.assertEqual(reopened.task("t1")["attempt"], 2)
+            reopened.close()
+
+    def test_persistent_demo_writes_run_and_events(self):
+        with TemporaryDirectory() as directory:
+            result = run_persistent_demo(Path(directory) / "demo.sqlite3")
+            self.assertEqual(result["status"], "SUCCEEDED")
+            self.assertEqual(result["durable_run"]["status"], "SUCCEEDED")
+            self.assertEqual(len(result["events"]), 2)
 
 
 if __name__ == "__main__":
