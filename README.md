@@ -12,6 +12,7 @@ Rates Fund OS is a paper-trading research and control system for a one-person, r
 - `RiskEngine` performs code-based limits and rejects stale/invalid proposals.
 - `PaperBroker` is idempotent and supports fills, cancellation, and restart-safe state.
 - `Ledger` rebuilds positions, cash, NAV and P&L from events.
+- `StateStore` persists runs, leased tasks, artifacts and ordered events in SQLite; duplicate events are ignored and expired task leases can be reclaimed.
 - Static command-center UI shows the pipeline and latest run artifacts.
 
 This repository contains no live broker adapter and never submits live orders. `DEMO`, `REPLAY`, and `PAPER` are separate modes; the current demo uses fixed fixtures.
@@ -20,6 +21,7 @@ This repository contains no live broker adapter and never submits live orders. `
 
 ```bash
 python -m backend.cli demo
+python -m backend.cli persistent-demo --db /tmp/rates-fund.sqlite3
 python -m unittest discover -s tests -v
 python -m backend.api
 ```
@@ -34,7 +36,9 @@ backend/
   domain/         typed fund objects and units
   execution/      paper execution port
   ledger/         event-sourced accounting
-  orchestration/  deterministic demo workflow
+  orchestration/  deterministic demo workflow and durable runner
+  state/          SQLite runs, tasks, artifacts and event log
+  data/           time-aware fixture source
   risk/           policy engine
   strategies/     rates strategy pods
 frontend/         static command center
