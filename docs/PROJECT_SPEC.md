@@ -29,6 +29,10 @@ No mode can route to a live broker.
 - Orders carry proposal, risk, policy, mode, and expiry references.
 - Ledger projections are rebuildable from event entries.
 
+## Persistence milestone
+
+`backend/state/store.py` is the first durable control-plane implementation. It uses SQLite with a run table, lease-based task claims, an append-only event table, and immutable artifact inserts. Its idempotency boundaries are event ID, task ID, and artifact ID. The persistent demo is still DEMO mode; it does not imply that market data or live execution is connected.
+
 ## Acceptance
 
-The first acceptance target is one repeatable DEMO run with two fills, ledger entries, a visible API response, and tests for role coverage, risk rejection, order idempotency, and ledger idempotency. Later milestones add real data, replay, and forward paper observation.
+The first acceptance target is one repeatable DEMO run with two fills, ledger entries, a visible API response, and tests for role coverage, risk rejection, order idempotency, and ledger idempotency. The M3 persistence slice adds a restart/reclaim test and two ordered durable events. Later milestones add real data, replay, and forward paper observation.
