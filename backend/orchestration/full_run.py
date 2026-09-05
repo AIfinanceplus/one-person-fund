@@ -22,6 +22,7 @@ def run_full_demo() -> dict[str, Any]:
     if portfolio.proposal and "risk_decision" in artifacts:
         risk = RiskEngine().check(portfolio.proposal, {"SHY": Decimal("0.50"), "IEF": Decimal("0.50")}, {"SHY": Decimal("82"), "IEF": Decimal("95")}, {"SHY": Decimal("1.8"), "IEF": Decimal("7.2")}, Decimal("10000000"), current_cash=Decimal("1000"), now=snapshot.available_at)
         artifacts["compliance"] = check_proposal(portfolio.proposal, risk, snapshot.mode, now=snapshot.available_at).as_dict()
-    artifacts["fundbench"] = run_fundbench(run_demo).as_dict()
+    # Evaluate the complete artifact graph, not a smaller second DEMO run.
+    artifacts["fundbench"] = run_fundbench(lambda: result).as_dict()
     result["status"] = "SUCCEEDED" if result.get("status") == "SUCCEEDED" else result.get("status")
     return result
