@@ -10,6 +10,7 @@
 ### Verification
 
 - Passed locally: `python -m backend.cli demo` returned `SUCCEEDED` with two fills and two ledger entries; `python -m unittest discover -s tests -v` ran 6 tests successfully; `python -m compileall -q backend tests`; API smoke returned `demo-run-001 SUCCEEDED 2` and 14 roles.
+- Passed from a fresh GitHub checkout: compile, 6 unit tests, and `demo-run-001 SUCCEEDED 2 2`.
 - Passed on GitHub Actions: final run `33946117324` succeeded for compile, unit tests, and demo smoke test.
 - Not run: GitHub Actions, real data ingestion, REPLAY, PAPER forward observation, NautilusTrader integration, FastAPI/React build.
 
