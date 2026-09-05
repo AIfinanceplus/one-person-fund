@@ -22,3 +22,5 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: Demo smoke test
         run: python -m backend.cli demo > /tmp/demo.json && python -c "import json; x=json.load(open('/tmp/demo.json')); assert x['status']=='SUCCEEDED'; assert len(x['artifacts']['fills']) == 2"
+      - name: Durable demo smoke test
+        run: python -m backend.cli persistent-demo --db /tmp/rates-fund.sqlite3 > /tmp/persistent.json && python -c "import json; x=json.load(open('/tmp/persistent.json')); assert x['status']=='SUCCEEDED'; assert len(x['events']) == 2"
