@@ -23,7 +23,7 @@ python -m backend.api
 - `REPLAY`：fixture 快照 mode 为 `REPLAY`，生成的订单 execution mode 也为 `REPLAY`。
 - `StateStore`：事件去重、任务 lease 过期恢复、持久 run 和 artifact 测试通过。
 - 四个异常场景返回预期状态；预算场景没有调用外部模型。
-- GitHub Actions：M3 已知通过 run `33946627040`；最新 CI 需在 full/replay smoke 完成后补写。
+- GitHub Actions：M3 已知通过 run `33946627040`；v0.1a 最终通过 run `33947982231`，包含 full-demo 与 replay smoke。
 
 ## 代码边界
 
@@ -37,4 +37,3 @@ python -m backend.api
 1. 记录 NautilusTrader 或其他执行端的安装、版本、许可证与窄型功能试验。
 2. 得到可再分发或有权限的 ETF quote/bar、duration、公司行动和交易日历数据。
 3. 生成真实来源 PAPER snapshot，先通过一次 run 和对账，再开始 10 个实际交易日观察。
-
