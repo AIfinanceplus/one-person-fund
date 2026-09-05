@@ -33,6 +33,15 @@ No mode can route to a live broker.
 
 `backend/state/store.py` is the first durable control-plane implementation. It uses SQLite with a run table, lease-based task claims, an append-only event table, and immutable artifact inserts. Its idempotency boundaries are event ID, task ID, and artifact ID. The persistent demo is still DEMO mode; it does not imply that market data or live execution is connected.
 
+## v0.1a implementation surface
+
+- `backend/orchestration/full_run.py` runs the five Pods, Portfolio, Risk, Compliance and FundBench as one artifact graph.
+- `backend/orchestration/modes.py` keeps fixture REPLAY and confirmed-source PAPER entry points separate from DEMO.
+- `backend/orchestration/scenarios.py` provides normal, missing-data, risk-limit and budget-exhausted demonstrations.
+- `backend/evaluation/fundbench.py` contains the frozen 50-case engineering acceptance set; it is not a performance or alpha claim.
+- `frontend/index.html` renders nine functional views from the API artifacts; it is intentionally a dependency-light local workbench.
+- `docs/adr/0001-execution-and-modes.md` records why `PaperBroker` remains the only execution authority in v0.1a.
+
 ## Acceptance
 
-The first acceptance target is one repeatable DEMO run with two fills, ledger entries, a visible API response, and tests for role coverage, risk rejection, order idempotency, and ledger idempotency. The M3 persistence slice adds a restart/reclaim test and two ordered durable events. Later milestones add real data, replay, and forward paper observation.
+The v0.1a acceptance target is one repeatable DEMO run with five Pods, two fills, ledger entries, visible API/UI artifacts, explicit failure scenarios, and 50/50 FundBench. The persistence slice adds restart/reclaim and ordered events; REPLAY verifies mode propagation. v0.1b still requires authorized ETF market data, duration/company-action metadata, execution-backend validation, and ten actual forward PAPER observation days. No fixed fixture can satisfy that requirement.
