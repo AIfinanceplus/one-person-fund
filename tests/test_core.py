@@ -15,6 +15,7 @@ from backend.state.store import StateStore
 from backend.data.time_series import FredGraphCsvSource, TreasuryXmlSource
 from backend.orchestration.full_run import run_full_demo
 from backend.orchestration.modes import run_replay
+from backend.orchestration.scenarios import run_scenario
 
 
 class RatesFundCoreTests(unittest.TestCase):
@@ -113,6 +114,18 @@ class RatesFundCoreTests(unittest.TestCase):
         result = run_replay("data/fixtures/curve_demo.json")
         self.assertEqual(result["run_id"], "replay-fixture-curve-001")
         self.assertEqual(result["artifacts"]["snapshot"]["mode"], "REPLAY")
+        self.assertTrue(all(order["execution_mode"] == "REPLAY" for order in result["artifacts"]["orders"]))
+
+    def test_fundbench_has_frozen_fifty_case_acceptance_set(self):
+        report = run_full_demo()["artifacts"]["fundbench"]
+        self.assertEqual(report["total"], 50)
+        self.assertEqual(report["passed"], 50)
+        self.assertEqual({bucket["total"] for bucket in report["by_category"].values()}, {6, 10, 12})
+
+    def test_failure_scenarios_are_explicit(self):
+        self.assertEqual(run_scenario("missing-data")["status"], "ABSTAINED")
+        self.assertEqual(run_scenario("risk-limit")["status"], "REJECTED")
+        self.assertEqual(run_scenario("budget-exhausted")["status"], "BLOCKED")
 
 
 if __name__ == "__main__":
