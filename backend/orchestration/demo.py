@@ -28,20 +28,22 @@ def run_snapshot(snapshot: DataSnapshot, history: list[Decimal], run_id: str = "
     signal = curve_signal(snapshot, history)
     # Seed a 50/50 long-only baseline. The signal moves it to 60/40; it does not create a short.
     ledger = Ledger(Decimal("1000"), initial_positions={"SHY": Decimal("60969.512195"), "IEF": Decimal("52626.315789")})
-    broker = PaperBroker(RunMode.DEMO)
+    broker = PaperBroker(RunMode(snapshot.mode))
     risk = RiskEngine()
-    artifacts: dict[str, object] = {"roles": [role.role_id for role in ROLE_CONTRACTS], "snapshot": snapshot.model_dump(mode="json"), "signal": signal.model_dump(mode="json")}
+    mode_value = getattr(snapshot.mode, "value", snapshot.mode)
+    artifacts: dict[str, object] = {"roles": [role.role_id for role in ROLE_CONTRACTS], "snapshot": snapshot.model_dump(mode="json"), "signal": signal.model_dump(mode="json"), "mode": mode_value}
     if signal.status != DecisionStatus.APPROVED:
-        return {"run_id": "demo-run-001", "status": "ABSTAINED", "artifacts": artifacts, "ledger": ledger.snapshot({"SHY": Decimal("82"), "IEF": Decimal("95")})}
+        return {"run_id": run_id, "status": "ABSTAINED", "artifacts": artifacts, "ledger": ledger.snapshot({"SHY": Decimal("82"), "IEF": Decimal("95")})}
     # The ETF expression is deliberately a simple long-only sleeve and is not a pure DV01-neutral curve trade.
     legs = [TradeLeg(instrument="SHY", side=Side.BUY, quantity=Decimal("12195.121951")), TradeLeg(instrument="IEF", side=Side.SELL, quantity=Decimal("10526.315789"))]
-    proposal = TradeProposal(proposal_id="proposal-demo-001", thesis_id="thesis-demo-001", strategy_id="curve_rv", snapshot_id=snapshot.snapshot_id, created_at=snapshot.available_at, legs=legs, target_weights={"SHY": Decimal("0.60"), "IEF": Decimal("0.40")}, reason="demo threshold crossed")
+    proposal = TradeProposal(proposal_id=f"proposal-{snapshot.snapshot_id}", thesis_id=f"thesis-{snapshot.snapshot_id}", strategy_id="curve_rv", snapshot_id=snapshot.snapshot_id, created_at=snapshot.available_at, legs=legs, target_weights={"SHY": Decimal("0.60"), "IEF": Decimal("0.40")}, reason="demo threshold crossed")
     decision = risk.check(proposal, current_weights={"SHY": Decimal("0.50"), "IEF": Decimal("0.50")}, prices={"SHY": Decimal("82"), "IEF": Decimal("95")}, durations={"SHY": Decimal("1.8"), "IEF": Decimal("7.2")}, nav=Decimal("10000000"), current_cash=Decimal("1000"), now=snapshot.available_at)
     artifacts["proposal"] = proposal.model_dump(mode="json")
     artifacts["risk_decision"] = decision.model_dump(mode="json")
     if decision.status == DecisionStatus.APPROVED:
         for index, leg in enumerate(decision.approved_legs):
-            _, fill = broker.submit(proposal.proposal_id, leg, snapshot.records[leg.instrument], f"demo-{proposal.proposal_id}-{index}")
+            order, fill = broker.submit(proposal.proposal_id, leg, snapshot.records[leg.instrument], f"{str(mode_value).lower()}-{proposal.proposal_id}-{index}")
+            artifacts.setdefault("orders", []).append(order.model_dump(mode="json"))
             ledger.record_fill(fill)
         for fill in broker.fills.values():
             artifacts.setdefault("fills", []).append(fill.model_dump(mode="json"))
