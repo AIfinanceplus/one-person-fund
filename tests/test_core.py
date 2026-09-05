@@ -12,6 +12,7 @@ from backend.orchestration.demo import run_demo
 from backend.orchestration.persistent import run_persistent_demo
 from backend.risk.engine import RiskEngine
 from backend.state.store import StateStore
+from backend.data.time_series import FredGraphCsvSource, TreasuryXmlSource
 
 
 class RatesFundCoreTests(unittest.TestCase):
@@ -82,6 +83,21 @@ class RatesFundCoreTests(unittest.TestCase):
             self.assertEqual(result["status"], "SUCCEEDED")
             self.assertEqual(result["durable_run"]["status"], "SUCCEEDED")
             self.assertEqual(len(result["events"]), 2)
+
+    def test_fred_csv_parser_keeps_missing_values_out(self):
+        csv_text = "observation_date,TEST\n2026-01-01,1.25\n2026-02-01,.\n"
+        points = FredGraphCsvSource(lambda _: csv_text).fetch("TEST")
+        self.assertEqual(len(points), 1)
+        self.assertEqual(points[0].value, Decimal("1.25"))
+        self.assertIsNone(points[0].source_available_at)
+
+    def test_treasury_xml_parser_builds_curve_snapshot_with_explicit_availability(self):
+        xml = """<feed xmlns:d='urn:treasury'><entry><d:NEW_DATE>2026-09-04</d:NEW_DATE><d:BC_2YEAR>3.50</d:BC_2YEAR><d:BC_10YEAR>4.00</d:BC_10YEAR></entry></feed>"""
+        source = TreasuryXmlSource(lambda _: xml)
+        record = source.fetch_year(2026)[0]
+        snapshot = source.snapshot(record, datetime(2026, 9, 4, 21, tzinfo=timezone.utc))
+        self.assertEqual(snapshot.records["2s10s_bp"], Decimal("50.00"))
+        self.assertEqual(snapshot.source, "treasury.gov:daily_treasury_yield_curve")
 
 
 if __name__ == "__main__":
