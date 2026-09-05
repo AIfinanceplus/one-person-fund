@@ -7,14 +7,16 @@ from backend.orchestration.demo import run_demo
 from backend.orchestration.full_run import run_full_demo
 from backend.orchestration.modes import run_paper, run_replay
 from backend.orchestration.persistent import run_persistent_demo
+from backend.orchestration.scenarios import run_scenario
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Rates Fund OS command line")
-    parser.add_argument("command", choices=("demo", "full-demo", "persistent-demo", "replay", "paper"), nargs="?", default="demo")
+    parser.add_argument("command", choices=("demo", "full-demo", "persistent-demo", "replay", "paper", "scenario"), nargs="?", default="demo")
     parser.add_argument("--db", default="data/runtime/rates-fund.sqlite3")
     parser.add_argument("--fixture", default="data/fixtures/curve_demo.json")
     parser.add_argument("--snapshot", default=None)
+    parser.add_argument("--scenario", choices=("normal", "missing-data", "risk-limit", "budget-exhausted"), default="normal")
     args = parser.parse_args()
     if args.command == "demo":
         print(json.dumps(run_demo(), indent=2, default=str))
@@ -30,6 +32,8 @@ def main() -> None:
         if not args.snapshot:
             parser.error("paper requires --snapshot PATH with confirmed market data")
         print(json.dumps(run_paper(args.snapshot), indent=2, default=str))
+    elif args.command == "scenario":
+        print(json.dumps(run_scenario(args.scenario), indent=2, default=str))
 
 
 if __name__ == "__main__":
