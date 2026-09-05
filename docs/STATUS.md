@@ -11,7 +11,7 @@
 
 - Passed locally: `python -m backend.cli demo` returned `SUCCEEDED` with two fills and two ledger entries; `python -m unittest discover -s tests -v` ran 6 tests successfully; `python -m compileall -q backend tests`; API smoke returned `demo-run-001 SUCCEEDED 2` and 14 roles.
 - Passed on GitHub Actions: final run `33946117324` succeeded for compile, unit tests, and demo smoke test.
-- M3 passed locally and on GitHub: SQLite `StateStore`, fixture source, durable demo runner, and 8 tests pass.
+- M3 passed locally and on GitHub: SQLite `StateStore`, fixture source, durable demo runner, Treasury XML/FRED CSV adapter parsers, and 10 tests pass.
 - Not run: GitHub Actions, real data ingestion, REPLAY, PAPER forward observation, NautilusTrader integration, FastAPI/React build.
 
 ### Known limitations
@@ -29,6 +29,6 @@
 
 ### GitHub evidence
 
-- M3 implementation baseline: `428f37a529e550207b0079f4cdc540dc5ec43fed`
-- CI run: <https://github.com/AIfinanceplus/one-person-fund/actions/runs/33946465641>
+- M3 implementation baseline: `3a19fd7606742d3385fb966d11c01195b6b0a85a`
+- CI run: <https://github.com/AIfinanceplus/one-person-fund/actions/runs/33946589948>
 - Issue backlog: #1–#14 in the repository
