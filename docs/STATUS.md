@@ -11,7 +11,7 @@
 
 - Passed locally: `python -m backend.cli demo` returned `SUCCEEDED` with two fills and two ledger entries; `python -m unittest discover -s tests -v` ran 6 tests successfully; `python -m compileall -q backend tests`; API smoke returned `demo-run-001 SUCCEEDED 2` and 14 roles.
 - Passed on GitHub Actions: final run `33946117324` succeeded for compile, unit tests, and demo smoke test.
-- M3 passed locally: SQLite `StateStore`, fixture source, durable demo runner, and 8 tests pass; not yet pushed.
+- M3 passed locally and on GitHub: SQLite `StateStore`, fixture source, durable demo runner, and 8 tests pass.
 - Not run: GitHub Actions, real data ingestion, REPLAY, PAPER forward observation, NautilusTrader integration, FastAPI/React build.
 
 ### Known limitations
@@ -23,12 +23,12 @@
 
 ### Next
 
-1. Push and review GitHub issue #3: persistent task/event storage and recovery.
+1. Review GitHub issue #3 against the M3 implementation.
 2. Continue GitHub issue #9: real data and vintage adapters.
 3. Keep the first forward PAPER observation blocked until the M3 data and persistence gates pass.
 
 ### GitHub evidence
 
-- Latest main commit: `6f27eb25e001262c02b1c6d25eb92dd556b5ad46`
-- CI run: <https://github.com/AIfinanceplus/one-person-fund/actions/runs/33946117324>
+- M3 implementation baseline: `428f37a529e550207b0079f4cdc540dc5ec43fed`
+- CI run: <https://github.com/AIfinanceplus/one-person-fund/actions/runs/33946465641>
 - Issue backlog: #1–#14 in the repository
