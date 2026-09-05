@@ -24,12 +24,13 @@
 - M3 基线：`3a19fd7606742d3385fb966d11c01195b6b0a85a`。
 - M4 实现批次：`624e56dab14b4934c0f4de4193e2ecd0a53e235f`。
 - CI 在加入 full/replay smoke 前的最终通过运行：`33946627040`。
-- CI 已加入 Full organization 与 Replay smoke；等待本次提交的最新 run 结果后再把 run ID 固定到交接记录。
+- CI 已加入 Full organization 与 Replay smoke；最终通过 run `33947982231`，compile、14 tests、DEMO、durable demo、full-demo、REPLAY 全部通过。
 
 ### 未完成 / 明确阻塞
 
 - 尚未运行 NautilusTrader 接入试验；当前 `PaperBroker` 是窄型日频 ETF 模拟后端。
 - 尚未取得并验证 ETF 实时价格、历史 duration、公司行动和交易日历数据，因此没有 v0.1b 前向 PAPER 观察，也不声称收益。
+- REPLAY fixture 已纳入远端 `data/fixtures/curve_demo.json`；此前一次失败是该文件未正确进入主分支，已由通过 run `33947982231` 覆盖。
 - API 仍是本地标准库 HTTP server；没有身份认证、公开部署、SSE 补拉或多进程生产部署。
 - FundBench v1 的 50 案例是工程冻结集，不是策略 alpha 或盈利保证。
 
@@ -38,4 +39,3 @@
 1. 完成 NautilusTrader/执行后端 ADR 试验，或正式记录暂缓。
 2. 接入有权限的 ETF quote/bar、duration、公司行动和日历源，生成带 provenance 的 PAPER snapshot。
 3. 先做 1 次 forward PAPER run，再连续记录 10 个实际交易日的行情、风险、对账和异常恢复。
-
