@@ -7,6 +7,7 @@ from pathlib import Path
 from backend.contracts.roles import ROLE_CONTRACTS
 from backend.orchestration.demo import run_demo
 from backend.orchestration.full_run import run_full_demo
+from backend.orchestration.scenarios import run_scenario
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -21,6 +22,15 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(payload)
 
     def do_GET(self) -> None:  # noqa: N802
+        if self.path.startswith("/api/scenarios/"):
+            name = self.path.rsplit("/", 1)[-1]
+            try:
+                payload = run_scenario(name)
+            except ValueError as exc:
+                self.send_error(404, str(exc))
+                return
+            self._send(json.dumps(payload, default=str).encode(), "application/json; charset=utf-8")
+            return
         if self.path in {"/api/full", "/api/status", "/api/strategy", "/api/portfolio", "/api/risk", "/api/orders", "/api/ledger", "/api/fundbench"}:
             result = run_full_demo()
             if self.path == "/api/status":
