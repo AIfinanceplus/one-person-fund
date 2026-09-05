@@ -17,8 +17,8 @@ python -m backend.api
 - The demo returns `SUCCEEDED`, exactly two fills, two ledger entries, and a deterministic risk decision.
 - Unit tests cover role registry, risk rejection, duplicate order idempotency, and duplicate fill idempotency.
 - The API exposes `/api/demo` and `/api/roles`; the UI reads the real demo response.
-- GitHub main commit: `6f27eb25e001262c02b1c6d25eb92dd556b5ad46`
-- GitHub Actions: run `33946117324` passed compile, 6 unit tests, and demo smoke.
+- GitHub main commit: `807d50174246ff37784a653656d79c1965bab469`
+- GitHub Actions: run `33946244639` passed compile, 6 unit tests, and demo smoke.
 - Next issues: #3 persistent state/outbox/recovery; #9 real data/vintage adapters.
 
 ## Do not infer
