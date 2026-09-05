@@ -1,1 +1,12 @@
-cat: data/fixtures/curve_demo.json: No such file or directory
+{
+  "snapshot": {
+    "snapshot_id": "fixture-curve-001",
+    "as_of": "2026-09-05T00:00:00+00:00",
+    "available_at": "2026-09-05T14:00:00+00:00",
+    "source": "checked-in-fixture",
+    "records": {"2s10s_bp": "-12", "SHY": "82.00", "IEF": "95.00"},
+    "quality": "OK",
+    "content_hash": "45c4ca94716d35d7"
+  },
+  "history": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+}
