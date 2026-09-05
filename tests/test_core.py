@@ -13,6 +13,8 @@ from backend.orchestration.persistent import run_persistent_demo
 from backend.risk.engine import RiskEngine
 from backend.state.store import StateStore
 from backend.data.time_series import FredGraphCsvSource, TreasuryXmlSource
+from backend.orchestration.full_run import run_full_demo
+from backend.orchestration.modes import run_replay
 
 
 class RatesFundCoreTests(unittest.TestCase):
@@ -98,6 +100,19 @@ class RatesFundCoreTests(unittest.TestCase):
         snapshot = source.snapshot(record, datetime(2026, 9, 4, 21, tzinfo=timezone.utc))
         self.assertEqual(snapshot.records["2s10s_bp"], Decimal("50.00"))
         self.assertEqual(snapshot.source, "treasury.gov:daily_treasury_yield_curve")
+
+    def test_full_demo_exposes_all_pods_portfolio_compliance_and_fundbench(self):
+        result = run_full_demo()
+        artifacts = result["artifacts"]
+        self.assertEqual(len(artifacts["pods"]), 5)
+        self.assertEqual(artifacts["portfolio"]["status"], "PROPOSED")
+        self.assertEqual(artifacts["compliance"]["status"], "APPROVED")
+        self.assertEqual(artifacts["fundbench"]["completion_rate"], 1.0)
+
+    def test_replay_uses_fixture_snapshot_and_keeps_mode_separate(self):
+        result = run_replay("data/fixtures/curve_demo.json")
+        self.assertEqual(result["run_id"], "replay-fixture-curve-001")
+        self.assertEqual(result["artifacts"]["snapshot"]["mode"], "REPLAY")
 
 
 if __name__ == "__main__":
