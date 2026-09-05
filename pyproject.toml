@@ -1,0 +1,12 @@
+[project]
+name = "one-person-fund"
+version = "0.1.0"
+description = "Rates Fund OS paper-trading vertical slice"
+requires-python = ">=3.12"
+dependencies = ["pydantic>=2.0,<3.0"]
+
+[project.scripts]
+rates-fund = "backend.cli:main"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
